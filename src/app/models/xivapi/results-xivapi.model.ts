@@ -1,5 +1,5 @@
 export interface ResultsXivapi {
-  ID: number;
+  ID: string;
   Icon: string;
   Name: string;
   Url: string;

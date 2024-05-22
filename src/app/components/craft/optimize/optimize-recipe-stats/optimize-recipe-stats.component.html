@@ -1,0 +1,25 @@
+<div
+  class="w-full h-full flex justify-between items-center border-2 border-gray-700 rounded-lg p-5"
+>
+  <div class="flex flex-col gap-3">
+    <div class="flex items-center">
+      <img src="https://xivapi.com{{ recipe()?.Icon }}" />
+      <p class="pl-4">{{ recipe()?.Name_fr }}</p>
+    </div>
+    <div>
+      <p>Progression: {{ difficulty() }}</p>
+      <p>Qualité: {{ quality() }}</p>
+      <p>Solidité: {{ durability() }}</p>
+    </div>
+  </div>
+  <div class="flex items-center">
+    <div>
+      <img class="w-8" src="https://xivapi.com{{ recipe()?.ClassJob?.Icon }}" />
+      <p>{{ recipe()?.ClassJob?.Abbreviation_fr }}</p>
+    </div>
+    <div class="pl-4">
+      <p>Level: {{ recipe()?.RecipeLevelTable?.ClassJobLevel }}</p>
+      <p>rlvl: {{ recipe()?.RecipeLevelTable?.ID }}</p>
+    </div>
+  </div>
+</div>

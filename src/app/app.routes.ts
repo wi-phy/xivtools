@@ -8,7 +8,8 @@ export const routes: Routes = [
   },
   {
     path: 'craft',
-    loadChildren: () => import('./routes/craft.routes').then((m) => m.routes),
+    loadChildren: () =>
+      import('./components/craft/craft.routes').then((m) => m.routes),
   },
   {
     path: '**',
