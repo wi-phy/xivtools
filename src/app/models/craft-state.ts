@@ -19,6 +19,8 @@ export interface CraftState {
   craftAction: string;
   time: number;
   currentProgress: number;
+  currentQuality: number;
+  currentDurability: number;
 
   // buffs
   memoireMusculaire: number;

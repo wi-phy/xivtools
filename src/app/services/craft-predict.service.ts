@@ -35,10 +35,14 @@ export class CraftPredictService {
     this.steps.push({ ...currentCraft });
     craftActions[2].progress(currentCraft);
     this.steps.push({ ...currentCraft });
+    craftActions[6].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    craftActions[0].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
 
     // while (
     //   currentCraft.progress > currentCraft.currentProgress &&
-    //   currentCraft.durability > 0
+    //   currentCraft.currentDurability > 0
     // ) {
     //   craftActions = SKILLS;
     //   // remove actions that can't be used after first step
@@ -83,6 +87,8 @@ export class CraftPredictService {
       craftAction: 'Init',
       time: 0,
       currentProgress: 0,
+      currentDurability: this.xivService.durability(),
+      currentQuality: 0,
       memoireMusculaire: 0,
       parcimonie: 0,
       parcimoniePerenne: 0,

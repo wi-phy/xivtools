@@ -18,7 +18,7 @@ export const travailDeBase: Skill = {
     craft.currentProgress += Math.floor(
       (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
     );
-    craft.durability -= durabilityCost;
+    craft.currentDurability -= durabilityCost;
     craft.step++;
     decrementBuffs(craft);
     craft.time += 3;
@@ -43,7 +43,7 @@ export const memoireMusculaire: Skill = {
     craft.currentProgress += Math.floor(
       (Math.floor(p1 * p2) * efficiency) / 100
     );
-    craft.durability -= durabilityCost;
+    craft.currentDurability -= durabilityCost;
     craft.ps -= 6;
     craft.step++;
     decrementBuffs(craft);
@@ -70,7 +70,7 @@ export const travailPrudent: Skill = {
     craft.currentProgress += Math.floor(
       (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
     );
-    craft.durability -= durabilityCost;
+    craft.currentDurability -= durabilityCost;
     craft.ps -= 7;
     craft.step++;
     decrementBuffs(craft);
@@ -96,7 +96,7 @@ export const travailPreparatoire: Skill = {
     craft.currentProgress += Math.floor(
       (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
     );
-    craft.durability -= durabilityCost;
+    craft.currentDurability -= durabilityCost;
     craft.ps -= 18;
     craft.step++;
     decrementBuffs(craft);
@@ -122,7 +122,7 @@ export const travailEconome: Skill = {
     craft.currentProgress += Math.floor(
       (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
     );
-    craft.durability -= durabilityCost;
+    craft.currentDurability -= durabilityCost;
     craft.ps -= 18;
     craft.step++;
     decrementBuffs(craft);
@@ -147,6 +147,25 @@ export const veneration: Skill = {
   },
 };
 
+export const reparationDeMaitre: Skill = {
+  name: 'Réparation de maître',
+  icon: '',
+  firstStepOnly: false,
+  noParcimonie: false,
+  psCost: 88,
+  progress: (craft: CraftState): void => {
+    craft.ps -= 88;
+    craft.step++;
+    decrementBuffs(craft);
+    craft.currentDurability =
+      craft.currentDurability + 30 > craft.durability
+        ? craft.durability
+        : craft.currentDurability + 30;
+    craft.time += 2;
+    craft.craftAction = 'Réparation de maître';
+  },
+};
+
 export const SKILLS: Skill[] = [
   travailDeBase,
   memoireMusculaire,
@@ -154,6 +173,7 @@ export const SKILLS: Skill[] = [
   travailPreparatoire,
   travailEconome,
   veneration,
+  reparationDeMaitre,
 ];
 
 function progressBuffs(craft: CraftState): number {
