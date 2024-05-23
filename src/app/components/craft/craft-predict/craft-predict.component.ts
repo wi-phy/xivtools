@@ -5,20 +5,19 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-optimize',
+  selector: 'app-craft-predict',
   standalone: true,
   imports: [FormsModule, CommonModule],
-  templateUrl: './optimize.component.html',
-  styleUrl: './optimize.component.scss',
+  templateUrl: './craft-predict.component.html',
+  styleUrl: './craft-predict.component.scss',
 })
-export class OptimizeComponent {
+export class CraftPredictComponent {
   private xivapiService = inject(XivapiService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   search = '';
   recipes = this.xivapiService.recipes;
-  ngOnInit() {}
 
   searchRecipe(): void {
     // if the search is less than 3 characters or ends with a space, return

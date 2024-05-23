@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, switchMap, tap } from 'rxjs';
 import { ResultsXivapi } from '../models/xivapi/results-xivapi.model';
@@ -67,4 +67,29 @@ export class XivapiService {
     })
   );
   recipe = toSignal(this.recipe$);
+
+  difficulty = computed(() => {
+    const recipe = this.recipe();
+    return recipe
+      ? Math.floor(
+          (recipe.RecipeLevelTable.Difficulty * recipe.DifficultyFactor) / 100
+        )
+      : 0;
+  });
+  quality = computed(() => {
+    const recipe = this.recipe();
+    return recipe
+      ? Math.floor(
+          (recipe.RecipeLevelTable.Quality * recipe.QualityFactor) / 100
+        )
+      : 0;
+  });
+  durability = computed(() => {
+    const recipe = this.recipe();
+    return recipe
+      ? Math.floor(
+          (recipe.RecipeLevelTable.Durability * recipe.DurabilityFactor) / 100
+        )
+      : 0;
+  });
 }
