@@ -22,10 +22,48 @@ export class CraftPredictService {
 
   predict(): void {
     this.steps = [];
-    let craftActions = SKILLS;
 
-    // infos sur le craft à l'instant initial
-    const craft = {
+    const craft = this.initCraft();
+
+    let craftActions = SKILLS;
+    let currentCraft = { ...craft };
+    this.steps.push({ ...currentCraft });
+
+    craftActions[1].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    craftActions[5].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    craftActions[2].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+
+    while (
+      currentCraft.progress > currentCraft.currentProgress &&
+      currentCraft.durability > 0
+    ) {
+      craftActions = SKILLS;
+      // remove actions that can't be used after first step
+      if (currentCraft.step >= 2) {
+        craftActions = craftActions.filter((action) => !action.firstStepOnly);
+      }
+      // remove actions that can't be used because of parcimonie
+      if (
+        currentCraft.buffs.parcimonie > 0 ||
+        currentCraft.buffs.parcimoniePerenne > 0
+      ) {
+        craftActions = craftActions.filter((action) => !action.noParcimonie);
+      }
+      // remove actions that can't be used because of PS cost
+      craftActions = craftActions.filter(
+        (action) => action.psCost < currentCraft.ps
+      );
+
+      craftActions[0].progress(currentCraft);
+      this.steps.push({ ...currentCraft });
+    }
+  }
+
+  private initCraft(): CraftState {
+    return {
       name: this.xivService.recipe()?.Name_fr ?? '',
       progress: this.xivService.difficulty(),
       quality: this.xivService.quality(),
@@ -42,28 +80,10 @@ export class CraftPredictService {
       currentProgress: 0,
       buffs: {
         memoireMusculaire: 0,
+        parcimonie: 0,
+        parcimoniePerenne: 0,
+        veneration: 0,
       },
     };
-    let currentCraft = { ...craft };
-    this.steps.push({ ...currentCraft });
-
-    craftActions[1].progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-
-    while (
-      currentCraft.progress > currentCraft.currentProgress &&
-      currentCraft.durability > 0
-    ) {
-      // remove actions that can't be used after first step
-      if (currentCraft.step === 2) {
-        craftActions = craftActions.filter((action) => !action.firstStepOnly);
-      }
-      // remove actions that can't be used because of PS cost
-      craftActions = craftActions.filter(
-        (action) => action.psCost < currentCraft.ps
-      );
-      craftActions[0].progress(currentCraft);
-      this.steps.push({ ...currentCraft });
-    }
   }
 }

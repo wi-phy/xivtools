@@ -22,5 +22,8 @@ export interface CraftState {
   // buffs
   buffs: {
     memoireMusculaire: number;
+    parcimonie: number;
+    parcimoniePerenne: number;
+    veneration: number;
   };
 }
