@@ -31,13 +31,13 @@ export class CraftPredictService {
 
     craftActions[1].progress(currentCraft);
     this.steps.push({ ...currentCraft });
+    craftActions[7].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
     craftActions[5].progress(currentCraft);
     this.steps.push({ ...currentCraft });
     craftActions[2].progress(currentCraft);
     this.steps.push({ ...currentCraft });
     craftActions[6].progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    craftActions[0].progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
     // while (

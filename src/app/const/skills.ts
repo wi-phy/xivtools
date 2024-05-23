@@ -166,6 +166,21 @@ export const reparationDeMaitre: Skill = {
   },
 };
 
+export const observation: Skill = {
+  name: 'Observation',
+  icon: '',
+  firstStepOnly: false,
+  noParcimonie: false,
+  psCost: 7,
+  progress: (craft: CraftState): void => {
+    craft.ps -= 7;
+    craft.step++;
+    decrementBuffs(craft);
+    craft.time += 2;
+    craft.craftAction = 'Observation';
+  },
+};
+
 export const SKILLS: Skill[] = [
   travailDeBase,
   memoireMusculaire,
@@ -174,6 +189,7 @@ export const SKILLS: Skill[] = [
   travailEconome,
   veneration,
   reparationDeMaitre,
+  observation
 ];
 
 function progressBuffs(craft: CraftState): number {
