@@ -4,6 +4,8 @@ import { Skill } from '../models/skill';
 export const travailDeBase: Skill = {
   name: 'Travail de base',
   icon: '',
+  firstStepOnly: false,
+  psCost: 0,
   progress: (craft: CraftState): void => {
     const efficiency = 120;
     const durabilityCost = 10;
@@ -12,7 +14,7 @@ export const travailDeBase: Skill = {
     const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
     const p2 = craft.clvl <= craft.rlvl ? craft.progMod / 100 : 1;
 
-    craft.progress -= Math.floor(
+    craft.currentProgress += Math.floor(
       (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
     );
     craft.durability -= durabilityCost;
@@ -24,6 +26,8 @@ export const travailDeBase: Skill = {
 export const memoireMusculaire: Skill = {
   name: 'Mémoire musculaire',
   icon: '',
+  firstStepOnly: true,
+  psCost: 6,
   progress: (craft: CraftState): void => {
     const efficiency = 300;
     const durabilityCost = 10;
@@ -32,7 +36,9 @@ export const memoireMusculaire: Skill = {
     const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
     const p2 = craft.clvl <= craft.rlvl ? craft.progMod / 100 : 1;
 
-    craft.progress -= Math.floor((Math.floor(p1 * p2) * efficiency) / 100);
+    craft.currentProgress += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
     craft.durability -= durabilityCost;
     craft.ps -= 6;
     craft.buffs.memoireMusculaire = 5;
@@ -43,7 +49,33 @@ export const memoireMusculaire: Skill = {
   },
 };
 
-export const SKILLS: Skill[] = [travailDeBase, memoireMusculaire];
+export const travailPrudent: Skill = {
+  name: 'Travail prudent',
+  icon: '',
+  firstStepOnly: false,
+  psCost: 7,
+  progress: (craft: CraftState): void => {
+    const efficiency = 180;
+    const durabilityCost = 10;
+
+    const multBuffs = progressBuffs(craft);
+    const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
+    const p2 = craft.clvl <= craft.rlvl ? craft.progMod / 100 : 1;
+
+    craft.currentProgress += Math.floor(
+      (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
+    );
+    craft.durability -= durabilityCost;
+    craft.step++;
+    craft.time += 3;
+  },
+};
+
+export const SKILLS: Skill[] = [
+  travailDeBase,
+  memoireMusculaire,
+  travailPrudent,
+];
 
 function progressBuffs(craft: CraftState): number {
   const buffs = craft.buffs;

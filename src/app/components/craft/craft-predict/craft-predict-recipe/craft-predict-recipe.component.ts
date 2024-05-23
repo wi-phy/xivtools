@@ -5,8 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlayerStats } from '../../../../models/player-stats';
 import { CraftPredictRecipeStatsComponent } from '../craft-predict-recipe-stats/craft-predict-recipe-stats.component';
 import { CraftPredictPlayerStatsComponent } from '../craft-predict-player-stats/craft-predict-player-stats.component';
-import { CLVL } from '../../../../const/clvl';
 import { CraftPredictService } from '../../../../services/craft-predict.service';
+import { CraftState } from '../../../../models/craft-state';
 
 @Component({
   selector: 'app-craft-predict-recipe',
@@ -22,6 +22,7 @@ export class CraftPredictRecipeComponent {
   private router = inject(Router);
   private craftPredictService = inject(CraftPredictService);
 
+  steps: CraftState[] = [];
   stats: PlayerStats = {} as PlayerStats;
 
   ngOnInit() {
@@ -43,5 +44,6 @@ export class CraftPredictRecipeComponent {
 
   debug() {
     this.craftPredictService.predict();
+    this.steps = this.craftPredictService.steps;
   }
 }

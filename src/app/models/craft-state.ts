@@ -17,6 +17,7 @@ export interface CraftState {
   // current step / time spent
   step: number;
   time: number;
+  currentProgress: number;
 
   // buffs
   buffs: {

@@ -9,7 +9,7 @@ import { CraftState } from '../models/craft-state';
   providedIn: 'root',
 })
 export class CraftPredictService {
-  xivService = inject(XivapiService);
+  private xivService = inject(XivapiService);
 
   playerStats = signal<PlayerStats>({
     craftmanship: 4065,
@@ -22,6 +22,7 @@ export class CraftPredictService {
 
   predict(): void {
     this.steps = [];
+    let craftActions = SKILLS;
 
     // infos sur le craft à l'instant initial
     const craft = {
@@ -38,20 +39,31 @@ export class CraftPredictService {
       ps: this.playerStats().ps,
       step: 1,
       time: 0,
+      currentProgress: 0,
       buffs: {
         memoireMusculaire: 0,
       },
     };
-    console.log({ ...craft });
+    let currentCraft = { ...craft };
+    this.steps.push({ ...currentCraft });
 
-    SKILLS[1].progress(craft);
-    this.steps.push({ ...craft });
+    craftActions[1].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
 
-    while (craft.progress > 0 && craft.durability > 0) {
-      SKILLS[0].progress(craft);
-      this.steps.push({ ...craft });
+    while (
+      currentCraft.progress > currentCraft.currentProgress &&
+      currentCraft.durability > 0
+    ) {
+      // remove actions that can't be used after first step
+      if (currentCraft.step === 2) {
+        craftActions = craftActions.filter((action) => !action.firstStepOnly);
+      }
+      // remove actions that can't be used because of PS cost
+      craftActions = craftActions.filter(
+        (action) => action.psCost < currentCraft.ps
+      );
+      craftActions[0].progress(currentCraft);
+      this.steps.push({ ...currentCraft });
     }
-
-    console.log(this.steps);
   }
 }

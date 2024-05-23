@@ -25,4 +25,15 @@
       <app-craft-predict-player-stats />
     </div>
   </div>
+  <div class="flex gap-5">
+    @for(step of steps; track step.step ){
+    <div>
+      <p>Step: {{ step.step }}</p>
+      <p>Progress: {{ step.currentProgress }}</p>
+      <p>Durability: {{ step.durability }}</p>
+      <p>PS: {{ step.ps }}</p>
+      <p>Time: {{ step.time }}</p>
+    </div>
+    }
+  </div>
 </div>
