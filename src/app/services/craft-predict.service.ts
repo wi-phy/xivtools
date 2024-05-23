@@ -36,32 +36,36 @@ export class CraftPredictService {
     craftActions[2].progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
-    while (
-      currentCraft.progress > currentCraft.currentProgress &&
-      currentCraft.durability > 0
-    ) {
-      craftActions = SKILLS;
-      // remove actions that can't be used after first step
-      if (currentCraft.step >= 2) {
-        craftActions = craftActions.filter((action) => !action.firstStepOnly);
-      }
-      // remove actions that can't be used because of parcimonie
-      if (
-        currentCraft.buffs.parcimonie > 0 ||
-        currentCraft.buffs.parcimoniePerenne > 0
-      ) {
-        craftActions = craftActions.filter((action) => !action.noParcimonie);
-      }
-      // remove actions that can't be used because of PS cost
-      craftActions = craftActions.filter(
-        (action) => action.psCost < currentCraft.ps
-      );
+    // while (
+    //   currentCraft.progress > currentCraft.currentProgress &&
+    //   currentCraft.durability > 0
+    // ) {
+    //   craftActions = SKILLS;
+    //   // remove actions that can't be used after first step
+    //   if (currentCraft.step >= 2) {
+    //     craftActions = craftActions.filter((action) => !action.firstStepOnly);
+    //   }
+    //   // remove actions that can't be used because of parcimonie
+    //   if (
+    //     currentCraft.buffs.parcimonie > 0 ||
+    //     currentCraft.buffs.parcimoniePerenne > 0
+    //   ) {
+    //     craftActions = craftActions.filter((action) => !action.noParcimonie);
+    //   }
+    //   // remove actions that can't be used because of PS cost
+    //   craftActions = craftActions.filter(
+    //     (action) => action.psCost < currentCraft.ps
+    //   );
 
-      craftActions[0].progress(currentCraft);
-      this.steps.push({ ...currentCraft });
-    }
+    //   craftActions[0].progress(currentCraft);
+    //   this.steps.push({ ...currentCraft });
+    // }
   }
 
+  /**
+   * Initialize the craft state
+   * @returns CraftState
+   */
   private initCraft(): CraftState {
     return {
       name: this.xivService.recipe()?.Name_fr ?? '',
@@ -76,14 +80,13 @@ export class CraftPredictService {
       control: this.playerStats().control,
       ps: this.playerStats().ps,
       step: 1,
+      craftAction: 'Init',
       time: 0,
       currentProgress: 0,
-      buffs: {
-        memoireMusculaire: 0,
-        parcimonie: 0,
-        parcimoniePerenne: 0,
-        veneration: 0,
-      },
+      memoireMusculaire: 0,
+      parcimonie: 0,
+      parcimoniePerenne: 0,
+      veneration: 0,
     };
   }
 }

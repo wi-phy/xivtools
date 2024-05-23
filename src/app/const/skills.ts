@@ -20,7 +20,9 @@ export const travailDeBase: Skill = {
     );
     craft.durability -= durabilityCost;
     craft.step++;
+    decrementBuffs(craft);
     craft.time += 3;
+    craft.craftAction = 'Travail de base';
   },
 };
 
@@ -43,11 +45,11 @@ export const memoireMusculaire: Skill = {
     );
     craft.durability -= durabilityCost;
     craft.ps -= 6;
-    craft.buffs.memoireMusculaire = 5;
     craft.step++;
-    craft.time += 3;
-
     decrementBuffs(craft);
+    craft.memoireMusculaire = 5;
+    craft.time += 3;
+    craft.craftAction = 'Mémoire musculaire';
   },
 };
 
@@ -71,7 +73,9 @@ export const travailPrudent: Skill = {
     craft.durability -= durabilityCost;
     craft.ps -= 7;
     craft.step++;
+    decrementBuffs(craft);
     craft.time += 3;
+    craft.craftAction = 'Travail prudent';
   },
 };
 
@@ -95,7 +99,9 @@ export const travailPreparatoire: Skill = {
     craft.durability -= durabilityCost;
     craft.ps -= 18;
     craft.step++;
+    decrementBuffs(craft);
     craft.time += 3;
+    craft.craftAction = 'Travail préparatoire';
   },
 };
 
@@ -119,21 +125,25 @@ export const travailEconome: Skill = {
     craft.durability -= durabilityCost;
     craft.ps -= 18;
     craft.step++;
+    decrementBuffs(craft);
     craft.time += 3;
+    craft.craftAction = 'Travail économe';
   },
 };
 
 export const veneration: Skill = {
-  name: 'Veneration',
+  name: 'Vénération',
   icon: '',
   firstStepOnly: false,
   noParcimonie: false,
   psCost: 18,
   progress: (craft: CraftState): void => {
-    craft.buffs.veneration = 4;
     craft.ps -= 18;
     craft.step++;
+    decrementBuffs(craft);
+    craft.veneration = 4;
     craft.time += 2;
+    craft.craftAction = 'Vénération';
   },
 };
 
@@ -147,17 +157,16 @@ export const SKILLS: Skill[] = [
 ];
 
 function progressBuffs(craft: CraftState): number {
-  const buffs = craft.buffs;
   const base = 100;
   let bonus = 0;
 
   // add bonus if Mémoire musculaire is active
-  if (buffs.memoireMusculaire > 0) {
+  if (craft.memoireMusculaire > 0) {
     bonus += 100;
-    buffs.memoireMusculaire = 0;
+    craft.memoireMusculaire = 0;
   }
   // add bonus if Vénération is active
-  if (buffs.veneration > 0) {
+  if (craft.veneration > 0) {
     bonus += 50;
   }
 
@@ -165,12 +174,10 @@ function progressBuffs(craft: CraftState): number {
 }
 
 function decrementBuffs(craft: CraftState): void {
-  const buffs = craft.buffs;
-
-  for (const key in buffs) {
-    const k = key as keyof typeof buffs;
-    if (buffs[k] > 0) {
-      buffs[k]--;
-    }
+  if (craft.memoireMusculaire > 0) {
+    craft.memoireMusculaire--;
+  }
+  if (craft.veneration > 0) {
+    craft.veneration--;
   }
 }

@@ -14,16 +14,15 @@ export interface CraftState {
   control: number;
   ps: number;
 
-  // current step / time spent
+  // infos about the current step
   step: number;
+  craftAction: string;
   time: number;
   currentProgress: number;
 
   // buffs
-  buffs: {
-    memoireMusculaire: number;
-    parcimonie: number;
-    parcimoniePerenne: number;
-    veneration: number;
-  };
+  memoireMusculaire: number;
+  parcimonie: number;
+  parcimoniePerenne: number;
+  veneration: number;
 }
