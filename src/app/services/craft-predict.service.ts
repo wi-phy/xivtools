@@ -91,10 +91,12 @@ export class CraftPredictService {
       currentProgress: 0,
       currentDurability: this.xivService.durability(),
       currentQuality: 0,
-      memoireMusculaire: 0,
-      parcimonie: 0,
-      parcimoniePerenne: 0,
-      veneration: 0,
+      buffs: {
+        memoireMusculaire: 0,
+        parcimonie: 0,
+        parcimoniePerenne: 0,
+        veneration: 0,
+      },
     };
   }
 }

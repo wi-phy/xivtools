@@ -23,8 +23,10 @@ export interface CraftState {
   currentDurability: number;
 
   // buffs
-  memoireMusculaire: number;
-  parcimonie: number;
-  parcimoniePerenne: number;
-  veneration: number;
+  buffs: {
+    memoireMusculaire: number;
+    parcimonie: number;
+    parcimoniePerenne: number;
+    veneration: number;
+  };
 }

@@ -49,7 +49,7 @@ export const memoireMusculaire: Skill = {
     craft.ps -= 6;
     craft.step++;
     decrementBuffs(craft);
-    craft.memoireMusculaire = 5;
+    craft.buffs.memoireMusculaire = 5;
     craft.time += 3;
     craft.craftAction = 'Mémoire musculaire';
   },
@@ -147,7 +147,7 @@ export const veneration: Skill = {
     craft.ps -= 18;
     craft.step++;
     decrementBuffs(craft);
-    craft.veneration = 4;
+    craft.buffs.veneration = 4;
     craft.time += 2;
     craft.craftAction = 'Vénération';
   },
@@ -202,11 +202,11 @@ export const parcimonie: Skill = {
     decrementBuffs(craft);
 
     // remove parcimonie pérenne buff if it's active
-    if (craft.parcimoniePerenne > 0) {
-      craft.parcimoniePerenne = 0;
+    if (craft.buffs.parcimoniePerenne > 0) {
+      craft.buffs.parcimoniePerenne = 0;
     }
 
-    craft.parcimonie = 4;
+    craft.buffs.parcimonie = 4;
     craft.time += 2;
     craft.craftAction = 'Parcimonie';
   },
@@ -225,11 +225,11 @@ export const parcimoniePerenne: Skill = {
     decrementBuffs(craft);
 
     // remove parcimonie buff if it's active
-    if (craft.parcimonie > 0) {
-      craft.parcimonie = 0;
+    if (craft.buffs.parcimonie > 0) {
+      craft.buffs.parcimonie = 0;
     }
 
-    craft.parcimoniePerenne = 8;
+    craft.buffs.parcimoniePerenne = 8;
     craft.time += 2;
     craft.craftAction = 'Parcimonie pérenne';
   },
@@ -247,36 +247,55 @@ export const SKILLS: Skill[] = [
   parcimonie,
 ];
 
+/**
+ * Calculate progress buffs
+ * @param craft state of the craft
+ * @returns progress multiplier
+ */
 function progressBuffs(craft: CraftState): number {
   const base = 100;
   let bonus = 0;
 
   // add bonus if Mémoire musculaire is active
-  if (craft.memoireMusculaire > 0) {
+  if (craft.buffs.memoireMusculaire > 0) {
     bonus += 100;
-    craft.memoireMusculaire = 0;
+    craft.buffs.memoireMusculaire = 0;
   }
   // add bonus if Vénération is active
-  if (craft.veneration > 0) {
+  if (craft.buffs.veneration > 0) {
     bonus += 50;
   }
 
   return (base + bonus) / 100;
 }
 
+/**
+ * Apply durability buffs
+ * @param durability skill durability
+ * @param craft state of the craft
+ * @returns modified durability
+ */
 function durabilityBuffs(durability: number, craft: CraftState): number {
-  if (craft.parcimonie > 0) {
+  if (craft.buffs.parcimonie > 0) {
     return Math.floor(durability / 2);
   } else {
     return durability;
   }
 }
 
+/**
+ * Decrement all buffs
+ * @param craft state of the craft
+ */
 function decrementBuffs(craft: CraftState): void {
-  if (craft.memoireMusculaire > 0) {
-    craft.memoireMusculaire--;
+  const buffs = { ...craft.buffs };
+
+  for (const key in buffs) {
+    const k = key as keyof typeof buffs;
+    if (buffs[k] > 0) {
+      buffs[k]--;
+    }
   }
-  if (craft.veneration > 0) {
-    craft.veneration--;
-  }
+
+  craft.buffs = buffs;
 }
