@@ -6,5 +6,6 @@ export interface Skill {
   firstStepOnly: boolean;
   noParcimonie: boolean;
   psCost: number;
+  level: number;
   progress: (craft: CraftState) => void;
 }

@@ -7,9 +7,10 @@ export const travailDeBase: Skill = {
   firstStepOnly: false,
   noParcimonie: false,
   psCost: 0,
+  level: 1,
   progress: (craft: CraftState): void => {
     const efficiency = 120;
-    const durabilityCost = 10;
+    const durabilityCost = durabilityBuffs(10, craft);
 
     const multBuffs = progressBuffs(craft);
     const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
@@ -32,9 +33,10 @@ export const memoireMusculaire: Skill = {
   firstStepOnly: true,
   noParcimonie: false,
   psCost: 6,
+  level: 54,
   progress: (craft: CraftState): void => {
     const efficiency = 300;
-    const durabilityCost = 10;
+    const durabilityCost = durabilityBuffs(10, craft);
 
     // note: impossible to have buffs with Mémoire musculaire
     const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
@@ -59,9 +61,10 @@ export const travailPrudent: Skill = {
   firstStepOnly: false,
   noParcimonie: false,
   psCost: 7,
+  level: 62,
   progress: (craft: CraftState): void => {
     const efficiency = 180;
-    const durabilityCost = 10;
+    const durabilityCost = durabilityBuffs(10, craft);
 
     const multBuffs = progressBuffs(craft);
     const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
@@ -85,9 +88,10 @@ export const travailPreparatoire: Skill = {
   firstStepOnly: false,
   noParcimonie: false,
   psCost: 18,
+  level: 72,
   progress: (craft: CraftState): void => {
     const efficiency = craft.durability < 20 ? 180 : 360;
-    const durabilityCost = 20;
+    const durabilityCost = durabilityBuffs(20, craft);
 
     const multBuffs = progressBuffs(craft);
     const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
@@ -111,6 +115,7 @@ export const travailEconome: Skill = {
   firstStepOnly: false,
   noParcimonie: true,
   psCost: 18,
+  level: 88,
   progress: (craft: CraftState): void => {
     const efficiency = 180;
     const durabilityCost = 5;
@@ -137,6 +142,7 @@ export const veneration: Skill = {
   firstStepOnly: false,
   noParcimonie: false,
   psCost: 18,
+  level: 15,
   progress: (craft: CraftState): void => {
     craft.ps -= 18;
     craft.step++;
@@ -153,6 +159,7 @@ export const reparationDeMaitre: Skill = {
   firstStepOnly: false,
   noParcimonie: false,
   psCost: 88,
+  level: 7,
   progress: (craft: CraftState): void => {
     craft.ps -= 88;
     craft.step++;
@@ -172,12 +179,59 @@ export const observation: Skill = {
   firstStepOnly: false,
   noParcimonie: false,
   psCost: 7,
+  level: 13,
   progress: (craft: CraftState): void => {
     craft.ps -= 7;
     craft.step++;
     decrementBuffs(craft);
     craft.time += 2;
     craft.craftAction = 'Observation';
+  },
+};
+
+export const parcimonie: Skill = {
+  name: 'Parcimonie',
+  icon: '',
+  firstStepOnly: false,
+  noParcimonie: false,
+  psCost: 56,
+  level: 15,
+  progress: (craft: CraftState): void => {
+    craft.ps -= 56;
+    craft.step++;
+    decrementBuffs(craft);
+
+    // remove parcimonie pérenne buff if it's active
+    if (craft.parcimoniePerenne > 0) {
+      craft.parcimoniePerenne = 0;
+    }
+
+    craft.parcimonie = 4;
+    craft.time += 2;
+    craft.craftAction = 'Parcimonie';
+  },
+};
+
+export const parcimoniePerenne: Skill = {
+  name: 'Parcimonie pérenne',
+  icon: '',
+  firstStepOnly: false,
+  noParcimonie: false,
+  psCost: 98,
+  level: 47,
+  progress: (craft: CraftState): void => {
+    craft.ps -= 98;
+    craft.step++;
+    decrementBuffs(craft);
+
+    // remove parcimonie buff if it's active
+    if (craft.parcimonie > 0) {
+      craft.parcimonie = 0;
+    }
+
+    craft.parcimoniePerenne = 8;
+    craft.time += 2;
+    craft.craftAction = 'Parcimonie pérenne';
   },
 };
 
@@ -189,7 +243,8 @@ export const SKILLS: Skill[] = [
   travailEconome,
   veneration,
   reparationDeMaitre,
-  observation
+  observation,
+  parcimonie,
 ];
 
 function progressBuffs(craft: CraftState): number {
@@ -207,6 +262,14 @@ function progressBuffs(craft: CraftState): number {
   }
 
   return (base + bonus) / 100;
+}
+
+function durabilityBuffs(durability: number, craft: CraftState): number {
+  if (craft.parcimonie > 0) {
+    return Math.floor(durability / 2);
+  } else {
+    return durability;
+  }
 }
 
 function decrementBuffs(craft: CraftState): void {

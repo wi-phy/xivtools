@@ -35,6 +35,8 @@ export class CraftPredictService {
     this.steps.push({ ...currentCraft });
     craftActions[5].progress(currentCraft);
     this.steps.push({ ...currentCraft });
+    craftActions[8].progress(currentCraft);
+    this.steps.push({ ...currentCraft });
     craftActions[2].progress(currentCraft);
     this.steps.push({ ...currentCraft });
     craftActions[6].progress(currentCraft);
