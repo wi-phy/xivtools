@@ -4,6 +4,7 @@ import { CLVL } from '../const/clvl';
 import { XivapiService } from './xivapi.service';
 import {
   SKILLS,
+  benedictionDeByregot,
   manipulation,
   memoireMusculaire,
   observation,
@@ -19,6 +20,7 @@ import {
   veneration,
 } from '../const/skills';
 import { CraftState } from '../models/craft-state';
+import { Skill } from '../models/skill';
 
 @Injectable({
   providedIn: 'root',
@@ -46,39 +48,67 @@ export class CraftPredictService {
 
     ouvrageDeBase.progress(currentCraft);
     this.steps.push({ ...currentCraft });
+    ouvrageAvance.progress(currentCraft);
+    this.steps.push({ ...currentCraft });
     ouvrageStandard.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    ouvrageAvance.progress(currentCraft);
+    reparationDeMaitre.progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    benedictionDeByregot.progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    ouvrageDeBase.progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    ouvrageStandard.progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    reparationDeMaitre.progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    benedictionDeByregot.progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
     // while (
     //   currentCraft.progress > currentCraft.currentProgress &&
     //   currentCraft.currentDurability > 0
     // ) {
-    //   craftActions = SKILLS;
-    //   // remove actions that can't be used after first step
-    //   if (currentCraft.step >= 2) {
-    //     craftActions = craftActions.filter((action) => !action.firstStepOnly);
-    //   }
-    //   // remove actions that can't be used because of parcimonie
-    //   if (
-    //     currentCraft.buffs.parcimonie > 0 ||
-    //     currentCraft.buffs.parcimoniePerenne > 0
-    //   ) {
-    //     craftActions = craftActions.filter((action) => !action.noParcimonie);
-    //   }
-    //   // remove actions that can't be used because of observation
-    //   if (currentCraft.buffs.observation === 0) {
-    //     craftActions = craftActions.filter((action) => !action.observationOnly);
-    //   }
-    //   // remove actions that can't be used because of PS cost
-    //   craftActions = craftActions.filter(
-    //     (action) => action.psCost < currentCraft.ps
-    //   );
+    //   craftActions = this.removeActions(currentCraft, SKILLS);
 
     //   craftActions[0].progress(currentCraft);
     //   this.steps.push({ ...currentCraft });
     // }
+  }
+
+  private removeActions(
+    currentCraft: CraftState,
+    craftActions: Skill[]
+  ): Skill[] {
+    // remove actions that can't be used after first step
+    if (currentCraft.step >= 2) {
+      craftActions = craftActions.filter((action) => !action.firstStepOnly);
+    }
+
+    // remove actions that can't be used if parcimmonie/parcimonie pérenne is active
+    if (
+      currentCraft.buffs.parcimonie > 0 ||
+      currentCraft.buffs.parcimoniePerenne > 0
+    ) {
+      craftActions = craftActions.filter((action) => !action.noParcimonie);
+    }
+
+    // remove actions that can't be used if observation is not active
+    if (currentCraft.buffs.observation === 0) {
+      craftActions = craftActions.filter((action) => !action.observationOnly);
+    }
+
+    // remove actions that can't be used if IQ is not active
+    if (currentCraft.iq === 0) {
+      craftActions = craftActions.filter((action) => !action.iqOnly);
+    }
+
+    // remove actions that can't be used if PS cost is higher than current PS
+    craftActions = craftActions.filter(
+      (action) => action.psCost(currentCraft) < currentCraft.ps
+    );
+
+    return craftActions;
   }
 
   /**

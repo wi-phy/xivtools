@@ -161,7 +161,7 @@ export const ouvrageDeBase: Skill = {
     );
     craft.currentDurability -= durabilityCost;
     craft.ps -= 18;
-    craft.iq += 1;
+    craft.iq += craft.iq < 10 ? 1 : 0;
     endStep(craft, 3, 'Ouvrage de base');
     craft.buffs.ouvrageDeBase = 1;
   },
@@ -185,7 +185,7 @@ export const ouvrageStandard: Skill = {
     );
     craft.currentDurability -= durabilityCost;
     craft.ps -= craft.buffs.ouvrageDeBase > 0 ? 18 : 32;
-    craft.iq += 1;
+    craft.iq += craft.iq < 10 ? 1 : 0;
     endStep(craft, 3, 'Ouvrage standard');
     craft.buffs.ouvrageStandard = 1;
   },
@@ -209,8 +209,31 @@ export const ouvrageAvance: Skill = {
     );
     craft.currentDurability -= durabilityCost;
     craft.ps -= craft.buffs.ouvrageStandard > 0 ? 18 : 46;
-    craft.iq += 1;
+    craft.iq += craft.iq < 10 ? 1 : 0;
     endStep(craft, 3, 'Ouvrage avancé');
+  },
+};
+
+export const benedictionDeByregot: Skill = {
+  name: 'Bénédiction de Byregot',
+  icon: '',
+  iqOnly: true,
+  psCost: (craft: CraftState): number => 24,
+  level: 50,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(100 + 20 * craft.iq, craft);
+    const durabilityCost = durabilityBuffs(10, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= 24;
+    craft.iq = 0;
+    endStep(craft, 3, 'Bénédiction de Byregot');
   },
 };
 
@@ -321,12 +344,15 @@ export const SKILLS: Skill[] = [
   travailEconome,
   travailAttentif,
   ouvrageDeBase,
+  ouvrageStandard,
+  ouvrageAvance,
+  benedictionDeByregot,
   veneration,
-  observation,
   parcimonie,
   parcimoniePerenne,
   reparationDeMaitre,
   manipulation,
+  observation,
 ];
 
 /**
