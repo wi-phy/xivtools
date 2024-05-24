@@ -8,6 +8,7 @@ import {
   manipulation,
   memoireMusculaire,
   observation,
+  ouvrageAttentif,
   ouvrageAvance,
   ouvrageDeBase,
   ouvrageStandard,
@@ -48,21 +49,9 @@ export class CraftPredictService {
 
     ouvrageDeBase.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    ouvrageAvance.progress(currentCraft);
+    observation.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    ouvrageStandard.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    reparationDeMaitre.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    benedictionDeByregot.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    ouvrageDeBase.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    ouvrageStandard.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    reparationDeMaitre.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    benedictionDeByregot.progress(currentCraft);
+    ouvrageAttentif.progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
     // while (

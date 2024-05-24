@@ -237,6 +237,29 @@ export const benedictionDeByregot: Skill = {
   },
 };
 
+export const ouvrageAttentif: Skill = {
+  name: 'Ouvrage attentif',
+  icon: '',
+  observationOnly: true,
+  psCost: (craft: CraftState): number => 18,
+  level: 68,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(150, craft);
+    const durabilityCost = durabilityBuffs(10, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= 18;
+    craft.iq += craft.iq < 10 ? 1 : 0;
+    endStep(craft, 3, 'Ouvrage attentif');
+  },
+};
+
 /* Bonus skills */
 
 export const veneration: Skill = {
@@ -347,6 +370,7 @@ export const SKILLS: Skill[] = [
   ouvrageStandard,
   ouvrageAvance,
   benedictionDeByregot,
+  ouvrageAttentif,
   veneration,
   parcimonie,
   parcimoniePerenne,
