@@ -318,6 +318,29 @@ export const ouvragePreparatoire: Skill = {
   },
 };
 
+export const veritableValeur: Skill = {
+  name: 'Véritable valeur',
+  icon: '',
+  firstStepOnly: true,
+  psCost: (craft: CraftState): number => 6,
+  level: 69,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(100, craft);
+    const durabilityCost = durabilityBuffs(10, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= 6;
+    craft.iq += 2;
+    endStep(craft, 3, 'Véritable valeur');
+  },
+};
+
 /* Bonus skills */
 
 export const veneration: Skill = {

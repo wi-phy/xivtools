@@ -22,6 +22,7 @@ import {
   travailDeBase,
   travailPrudent,
   veneration,
+  veritableValeur,
 } from '../const/skills';
 import { CraftState } from '../models/craft-state';
 import { Skill } from '../models/skill';
@@ -50,9 +51,9 @@ export class CraftPredictService {
     let currentCraft = { ...craft };
     this.steps.push({ ...currentCraft });
 
-    parcimonie.progress(currentCraft);
+    veritableValeur.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    ouvragePreparatoire.progress(currentCraft);
+    parcimonie.progress(currentCraft);
     this.steps.push({ ...currentCraft });
     ouvragePreparatoire.progress(currentCraft);
     this.steps.push({ ...currentCraft });
