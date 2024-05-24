@@ -11,6 +11,7 @@ import {
   ouvrageAttentif,
   ouvrageAvance,
   ouvrageDeBase,
+  ouvrageParcimonieux,
   ouvrageStandard,
   parcimonie,
   parcimoniePerenne,
@@ -52,6 +53,8 @@ export class CraftPredictService {
     observation.progress(currentCraft);
     this.steps.push({ ...currentCraft });
     ouvrageAttentif.progress(currentCraft);
+    this.steps.push({ ...currentCraft });
+    ouvrageParcimonieux.progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
     // while (

@@ -260,6 +260,29 @@ export const ouvrageAttentif: Skill = {
   },
 };
 
+export const ouvrageParcimonieux: Skill = {
+  name: 'Ouvrage parcimonieux',
+  icon: '',
+  noParcimonie: true,
+  psCost: (craft: CraftState): number => 25,
+  level: 66,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(100, craft);
+    const durabilityCost = durabilityBuffs(5, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= 25;
+    craft.iq += craft.iq < 10 ? 1 : 0;
+    endStep(craft, 3, 'Ouvrage parcimonieux');
+  },
+};
+
 /* Bonus skills */
 
 export const veneration: Skill = {
