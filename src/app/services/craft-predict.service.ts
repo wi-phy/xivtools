@@ -5,6 +5,7 @@ import { XivapiService } from './xivapi.service';
 import {
   SKILLS,
   benedictionDeByregot,
+  mainPreste,
   manipulation,
   memoireMusculaire,
   observation,
@@ -12,6 +13,7 @@ import {
   ouvrageAvance,
   ouvrageDeBase,
   ouvrageParcimonieux,
+  ouvragePreparatoire,
   ouvrageStandard,
   parcimonie,
   parcimoniePerenne,
@@ -48,13 +50,11 @@ export class CraftPredictService {
     let currentCraft = { ...craft };
     this.steps.push({ ...currentCraft });
 
-    ouvrageDeBase.progress(currentCraft);
+    parcimonie.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    observation.progress(currentCraft);
+    ouvragePreparatoire.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    ouvrageAttentif.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    ouvrageParcimonieux.progress(currentCraft);
+    ouvragePreparatoire.progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
     // while (
@@ -95,6 +95,13 @@ export class CraftPredictService {
       craftActions = craftActions.filter((action) => !action.iqOnly);
     }
 
+    // remove Main preste if player level is higher than craft level + 10 (or equal)
+    if (currentCraft.craftLevel + 10 <= currentCraft.playerLevel) {
+      craftActions = craftActions.filter(
+        (action) => action.name !== 'Main preste'
+      );
+    }
+
     // remove actions that can't be used if PS cost is higher than current PS
     craftActions = craftActions.filter(
       (action) => action.psCost(currentCraft) < currentCraft.ps
@@ -113,7 +120,9 @@ export class CraftPredictService {
       progress: this.xivService.difficulty(),
       quality: this.xivService.quality(),
       durability: this.xivService.durability(),
+      craftLevel: this.xivService.recipe()?.RecipeLevelTable.ClassJobLevel ?? 0,
       rlvl: this.xivService.recipe()?.RecipeLevelTable.ID ?? 0,
+      playerLevel: this.playerStats().level,
       clvl: CLVL[this.playerStats().level as keyof typeof CLVL],
       progDiv: this.xivService.recipe()?.RecipeLevelTable.ProgressDivider ?? 0,
       progMod: this.xivService.recipe()?.RecipeLevelTable.ProgressModifier ?? 0,

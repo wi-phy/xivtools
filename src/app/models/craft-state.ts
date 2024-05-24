@@ -4,6 +4,7 @@ export interface CraftState {
   progress: number;
   quality: number;
   durability: number;
+  craftLevel: number;
   rlvl: number;
   progDiv: number;
   progMod: number;
@@ -11,6 +12,7 @@ export interface CraftState {
   qualMod: number;
 
   // player stats
+  playerLevel: number;
   clvl: number;
   craftmanship: number;
   control: number;

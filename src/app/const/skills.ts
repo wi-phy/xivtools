@@ -283,6 +283,41 @@ export const ouvrageParcimonieux: Skill = {
   },
 };
 
+export const mainPreste: Skill = {
+  name: 'Main preste',
+  icon: '',
+  firstStepOnly: true,
+  psCost: (craft: CraftState): number => 250,
+  level: 80,
+  progress: (craft: CraftState): void => {
+    craft.currentQuality = craft.quality;
+    craft.ps -= 250;
+    endStep(craft, 3, 'Main preste');
+  },
+};
+
+export const ouvragePreparatoire: Skill = {
+  name: 'Ouvrage préparatoire',
+  icon: '',
+  psCost: (craft: CraftState): number => 40,
+  level: 71,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(200, craft);
+    const durabilityCost = durabilityBuffs(20, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= 40;
+    craft.iq = craft.iq <= 7 ? craft.iq + 2 : 10;
+    endStep(craft, 3, 'Ouvrage préparatoire');
+  },
+};
+
 /* Bonus skills */
 
 export const veneration: Skill = {
@@ -394,6 +429,9 @@ export const SKILLS: Skill[] = [
   ouvrageAvance,
   benedictionDeByregot,
   ouvrageAttentif,
+  ouvrageParcimonieux,
+  mainPreste,
+  ouvragePreparatoire,
   veneration,
   parcimonie,
   parcimoniePerenne,
@@ -455,8 +493,8 @@ function durabilityBuffs(durability: number, craft: CraftState): number {
 function endStep(craft: CraftState, time: number, action: string): void {
   // if manipulation is active, add 5 durability
   if (
-    craft.currentDurability > 0 &&
     craft.buffs.manipulation > 0 &&
+    craft.currentDurability > 0 &&
     action !== 'Manipulation'
   ) {
     craft.currentDurability =
