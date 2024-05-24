@@ -28,5 +28,6 @@ export interface CraftState {
     parcimonie: number;
     parcimoniePerenne: number;
     veneration: number;
+    manipulation: number;
   };
 }

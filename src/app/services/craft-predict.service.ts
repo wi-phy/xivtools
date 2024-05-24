@@ -2,7 +2,17 @@ import { Injectable, inject, signal } from '@angular/core';
 import { PlayerStats } from '../models/player-stats';
 import { CLVL } from '../const/clvl';
 import { XivapiService } from './xivapi.service';
-import { SKILLS } from '../const/skills';
+import {
+  SKILLS,
+  manipulation,
+  memoireMusculaire,
+  parcimonie,
+  parcimoniePerenne,
+  reparationDeMaitre,
+  travailDeBase,
+  travailPrudent,
+  veneration,
+} from '../const/skills';
 import { CraftState } from '../models/craft-state';
 
 @Injectable({
@@ -29,17 +39,13 @@ export class CraftPredictService {
     let currentCraft = { ...craft };
     this.steps.push({ ...currentCraft });
 
-    craftActions[1].progress(currentCraft);
+    memoireMusculaire.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    craftActions[7].progress(currentCraft);
+    manipulation.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    craftActions[5].progress(currentCraft);
+    veneration.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    craftActions[8].progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    craftActions[2].progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    craftActions[6].progress(currentCraft);
+    travailDeBase.progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
     // while (
@@ -96,6 +102,7 @@ export class CraftPredictService {
         parcimonie: 0,
         parcimoniePerenne: 0,
         veneration: 0,
+        manipulation: 0,
       },
     };
   }

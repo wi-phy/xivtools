@@ -1,6 +1,8 @@
 import { CraftState } from '../models/craft-state';
 import { Skill } from '../models/skill';
 
+/* Progress skills */
+
 export const travailDeBase: Skill = {
   name: 'Travail de base',
   icon: '',
@@ -20,10 +22,7 @@ export const travailDeBase: Skill = {
       (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
     );
     craft.currentDurability -= durabilityCost;
-    craft.step++;
-    decrementBuffs(craft);
-    craft.time += 3;
-    craft.craftAction = 'Travail de base';
+    endStep(craft, 3, 'Travail de base');
   },
 };
 
@@ -47,11 +46,9 @@ export const memoireMusculaire: Skill = {
     );
     craft.currentDurability -= durabilityCost;
     craft.ps -= 6;
-    craft.step++;
-    decrementBuffs(craft);
+    endStep(craft, 3, 'Mémoire musculaire');
+
     craft.buffs.memoireMusculaire = 5;
-    craft.time += 3;
-    craft.craftAction = 'Mémoire musculaire';
   },
 };
 
@@ -75,10 +72,7 @@ export const travailPrudent: Skill = {
     );
     craft.currentDurability -= durabilityCost;
     craft.ps -= 7;
-    craft.step++;
-    decrementBuffs(craft);
-    craft.time += 3;
-    craft.craftAction = 'Travail prudent';
+    endStep(craft, 3, 'Travail prudent');
   },
 };
 
@@ -102,10 +96,7 @@ export const travailPreparatoire: Skill = {
     );
     craft.currentDurability -= durabilityCost;
     craft.ps -= 18;
-    craft.step++;
-    decrementBuffs(craft);
-    craft.time += 3;
-    craft.craftAction = 'Travail préparatoire';
+    endStep(craft, 3, 'Travail préparatoire');
   },
 };
 
@@ -129,12 +120,12 @@ export const travailEconome: Skill = {
     );
     craft.currentDurability -= durabilityCost;
     craft.ps -= 18;
-    craft.step++;
-    decrementBuffs(craft);
-    craft.time += 3;
-    craft.craftAction = 'Travail économe';
+
+    endStep(craft, 3, 'Travail économe');
   },
 };
+
+/* Bonus skills */
 
 export const veneration: Skill = {
   name: 'Vénération',
@@ -145,47 +136,9 @@ export const veneration: Skill = {
   level: 15,
   progress: (craft: CraftState): void => {
     craft.ps -= 18;
-    craft.step++;
-    decrementBuffs(craft);
+    endStep(craft, 2, 'Vénération');
+
     craft.buffs.veneration = 4;
-    craft.time += 2;
-    craft.craftAction = 'Vénération';
-  },
-};
-
-export const reparationDeMaitre: Skill = {
-  name: 'Réparation de maître',
-  icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 88,
-  level: 7,
-  progress: (craft: CraftState): void => {
-    craft.ps -= 88;
-    craft.step++;
-    decrementBuffs(craft);
-    craft.currentDurability =
-      craft.currentDurability + 30 > craft.durability
-        ? craft.durability
-        : craft.currentDurability + 30;
-    craft.time += 2;
-    craft.craftAction = 'Réparation de maître';
-  },
-};
-
-export const observation: Skill = {
-  name: 'Observation',
-  icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 7,
-  level: 13,
-  progress: (craft: CraftState): void => {
-    craft.ps -= 7;
-    craft.step++;
-    decrementBuffs(craft);
-    craft.time += 2;
-    craft.craftAction = 'Observation';
   },
 };
 
@@ -198,8 +151,7 @@ export const parcimonie: Skill = {
   level: 15,
   progress: (craft: CraftState): void => {
     craft.ps -= 56;
-    craft.step++;
-    decrementBuffs(craft);
+    endStep(craft, 2, 'Parcimonie');
 
     // remove parcimonie pérenne buff if it's active
     if (craft.buffs.parcimoniePerenne > 0) {
@@ -207,8 +159,6 @@ export const parcimonie: Skill = {
     }
 
     craft.buffs.parcimonie = 4;
-    craft.time += 2;
-    craft.craftAction = 'Parcimonie';
   },
 };
 
@@ -221,8 +171,7 @@ export const parcimoniePerenne: Skill = {
   level: 47,
   progress: (craft: CraftState): void => {
     craft.ps -= 98;
-    craft.step++;
-    decrementBuffs(craft);
+    endStep(craft, 2, 'Parcimonie pérenne');
 
     // remove parcimonie buff if it's active
     if (craft.buffs.parcimonie > 0) {
@@ -230,11 +179,61 @@ export const parcimoniePerenne: Skill = {
     }
 
     craft.buffs.parcimoniePerenne = 8;
-    craft.time += 2;
-    craft.craftAction = 'Parcimonie pérenne';
   },
 };
 
+/* Repair skills */
+
+export const reparationDeMaitre: Skill = {
+  name: 'Réparation de maître',
+  icon: '',
+  firstStepOnly: false,
+  noParcimonie: false,
+  psCost: 88,
+  level: 7,
+  progress: (craft: CraftState): void => {
+    craft.ps -= 88;
+    craft.currentDurability =
+      craft.currentDurability + 30 > craft.durability
+        ? craft.durability
+        : craft.currentDurability + 30;
+    endStep(craft, 2, 'Réparation de maître');
+  },
+};
+
+export const manipulation: Skill = {
+  name: 'Manipulation',
+  icon: '',
+  firstStepOnly: false,
+  noParcimonie: false,
+  psCost: 96,
+  level: 65,
+  progress: (craft: CraftState): void => {
+    craft.ps -= 96;
+    endStep(craft, 2, 'Manipulation');
+
+    craft.buffs.manipulation = 8;
+  },
+};
+
+/* Other skills */
+
+export const observation: Skill = {
+  name: 'Observation',
+  icon: '',
+  firstStepOnly: false,
+  noParcimonie: false,
+  psCost: 7,
+  level: 13,
+  progress: (craft: CraftState): void => {
+    craft.ps -= 7;
+    endStep(craft, 2, 'Observation');
+  },
+};
+
+/**
+ * List of all skills
+ */
 export const SKILLS: Skill[] = [
   travailDeBase,
   memoireMusculaire,
@@ -245,6 +244,7 @@ export const SKILLS: Skill[] = [
   reparationDeMaitre,
   observation,
   parcimonie,
+  parcimoniePerenne,
 ];
 
 /**
@@ -276,11 +276,30 @@ function progressBuffs(craft: CraftState): number {
  * @returns modified durability
  */
 function durabilityBuffs(durability: number, craft: CraftState): number {
-  if (craft.buffs.parcimonie > 0) {
+  if (craft.buffs.parcimonie > 0 || craft.buffs.parcimoniePerenne > 0) {
     return Math.floor(durability / 2);
   } else {
     return durability;
   }
+}
+
+function endStep(craft: CraftState, time: number, action: string): void {
+  // if manipulation is active, add 5 durability
+  if (
+    craft.currentDurability > 0 &&
+    craft.buffs.manipulation > 0 &&
+    action !== 'Manipulation'
+  ) {
+    craft.currentDurability =
+      craft.currentDurability + 5 > craft.durability
+        ? craft.durability
+        : craft.currentDurability + 5;
+  }
+
+  craft.step++;
+  decrementBuffs(craft);
+  craft.time += time;
+  craft.craftAction = action;
 }
 
 /**
