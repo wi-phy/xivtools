@@ -7,6 +7,8 @@ export interface CraftState {
   rlvl: number;
   progDiv: number;
   progMod: number;
+  qualDiv: number;
+  qualMod: number;
 
   // player stats
   clvl: number;
@@ -29,5 +31,9 @@ export interface CraftState {
     parcimoniePerenne: number;
     veneration: number;
     manipulation: number;
+    observation: number;
+    ouvrageDeBase: number;
+    ouvrageStandard: number;
   };
+  iq: number;
 }

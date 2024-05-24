@@ -6,9 +6,14 @@ import {
   SKILLS,
   manipulation,
   memoireMusculaire,
+  observation,
+  ouvrageAvance,
+  ouvrageDeBase,
+  ouvrageStandard,
   parcimonie,
   parcimoniePerenne,
   reparationDeMaitre,
+  travailAttentif,
   travailDeBase,
   travailPrudent,
   veneration,
@@ -39,13 +44,11 @@ export class CraftPredictService {
     let currentCraft = { ...craft };
     this.steps.push({ ...currentCraft });
 
-    memoireMusculaire.progress(currentCraft);
+    ouvrageDeBase.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    manipulation.progress(currentCraft);
+    ouvrageStandard.progress(currentCraft);
     this.steps.push({ ...currentCraft });
-    veneration.progress(currentCraft);
-    this.steps.push({ ...currentCraft });
-    travailDeBase.progress(currentCraft);
+    ouvrageAvance.progress(currentCraft);
     this.steps.push({ ...currentCraft });
 
     // while (
@@ -63,6 +66,10 @@ export class CraftPredictService {
     //     currentCraft.buffs.parcimoniePerenne > 0
     //   ) {
     //     craftActions = craftActions.filter((action) => !action.noParcimonie);
+    //   }
+    //   // remove actions that can't be used because of observation
+    //   if (currentCraft.buffs.observation === 0) {
+    //     craftActions = craftActions.filter((action) => !action.observationOnly);
     //   }
     //   // remove actions that can't be used because of PS cost
     //   craftActions = craftActions.filter(
@@ -88,6 +95,8 @@ export class CraftPredictService {
       clvl: CLVL[this.playerStats().level as keyof typeof CLVL],
       progDiv: this.xivService.recipe()?.RecipeLevelTable.ProgressDivider ?? 0,
       progMod: this.xivService.recipe()?.RecipeLevelTable.ProgressModifier ?? 0,
+      qualDiv: this.xivService.recipe()?.RecipeLevelTable.QualityDivider ?? 0,
+      qualMod: this.xivService.recipe()?.RecipeLevelTable.QualityModifier ?? 0,
       craftmanship: this.playerStats().craftmanship,
       control: this.playerStats().control,
       ps: this.playerStats().ps,
@@ -103,7 +112,11 @@ export class CraftPredictService {
         parcimoniePerenne: 0,
         veneration: 0,
         manipulation: 0,
+        observation: 0,
+        ouvrageDeBase: 0,
+        ouvrageStandard: 0,
       },
+      iq: 0,
     };
   }
 }

@@ -6,9 +6,7 @@ import { Skill } from '../models/skill';
 export const travailDeBase: Skill = {
   name: 'Travail de base',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 0,
+  psCost: (craft: CraftState): number => 0,
   level: 1,
   progress: (craft: CraftState): void => {
     const efficiency = 120;
@@ -30,8 +28,7 @@ export const memoireMusculaire: Skill = {
   name: 'Mémoire musculaire',
   icon: '',
   firstStepOnly: true,
-  noParcimonie: false,
-  psCost: 6,
+  psCost: (craft: CraftState): number => 6,
   level: 54,
   progress: (craft: CraftState): void => {
     const efficiency = 300;
@@ -55,9 +52,7 @@ export const memoireMusculaire: Skill = {
 export const travailPrudent: Skill = {
   name: 'Travail prudent',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 7,
+  psCost: (craft: CraftState): number => 7,
   level: 62,
   progress: (craft: CraftState): void => {
     const efficiency = 180;
@@ -79,9 +74,7 @@ export const travailPrudent: Skill = {
 export const travailPreparatoire: Skill = {
   name: 'Travail préparatoire',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 18,
+  psCost: (craft: CraftState): number => 18,
   level: 72,
   progress: (craft: CraftState): void => {
     const efficiency = craft.durability < 20 ? 180 : 360;
@@ -103,9 +96,8 @@ export const travailPreparatoire: Skill = {
 export const travailEconome: Skill = {
   name: 'Travail économe',
   icon: '',
-  firstStepOnly: false,
   noParcimonie: true,
-  psCost: 18,
+  psCost: (craft: CraftState): number => 18,
   level: 88,
   progress: (craft: CraftState): void => {
     const efficiency = 180;
@@ -125,14 +117,109 @@ export const travailEconome: Skill = {
   },
 };
 
+// potentiellement à changer + tard car utilisable sans observation
+export const travailAttentif: Skill = {
+  name: 'Travail attentif',
+  icon: '',
+  observationOnly: true,
+  psCost: (craft: CraftState): number => 5,
+  level: 67,
+  progress: (craft: CraftState): void => {
+    const efficiency = 200;
+    const durabilityCost = 10;
+
+    const multBuffs = progressBuffs(craft);
+    const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
+    const p2 = craft.clvl <= craft.rlvl ? craft.progMod / 100 : 1;
+
+    craft.currentProgress += Math.floor(
+      (Math.floor(p1 * p2) * efficiency * multBuffs) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= 5;
+
+    endStep(craft, 3, 'Travail attentif');
+  },
+};
+
+/* Quality skills */
+
+export const ouvrageDeBase: Skill = {
+  name: 'Ouvrage de base',
+  icon: '',
+  psCost: (craft: CraftState): number => 18,
+  level: 5,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(100, craft);
+    const durabilityCost = durabilityBuffs(10, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= 18;
+    craft.iq += 1;
+    endStep(craft, 3, 'Ouvrage de base');
+    craft.buffs.ouvrageDeBase = 1;
+  },
+};
+
+export const ouvrageStandard: Skill = {
+  name: 'Ouvrage standard',
+  icon: '',
+  psCost: (craft: CraftState): number =>
+    craft.buffs.ouvrageDeBase > 0 ? 18 : 32,
+  level: 18,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(125, craft);
+    const durabilityCost = durabilityBuffs(10, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= craft.buffs.ouvrageDeBase > 0 ? 18 : 32;
+    craft.iq += 1;
+    endStep(craft, 3, 'Ouvrage standard');
+    craft.buffs.ouvrageStandard = 1;
+  },
+};
+
+export const ouvrageAvance: Skill = {
+  name: 'Ouvrage avancé',
+  icon: '',
+  psCost: (craft: CraftState): number =>
+    craft.buffs.ouvrageStandard > 0 ? 18 : 46,
+  level: 84,
+  progress: (craft: CraftState): void => {
+    const efficiency = qualityBuffs(150, craft);
+    const durabilityCost = durabilityBuffs(10, craft);
+
+    const p1 = (craft.control * 10) / craft.qualDiv + 35;
+    const p2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+
+    craft.currentQuality += Math.floor(
+      (Math.floor(p1 * p2) * efficiency) / 100
+    );
+    craft.currentDurability -= durabilityCost;
+    craft.ps -= craft.buffs.ouvrageStandard > 0 ? 18 : 46;
+    craft.iq += 1;
+    endStep(craft, 3, 'Ouvrage avancé');
+  },
+};
+
 /* Bonus skills */
 
 export const veneration: Skill = {
   name: 'Vénération',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 18,
+  psCost: (craft: CraftState): number => 18,
   level: 15,
   progress: (craft: CraftState): void => {
     craft.ps -= 18;
@@ -145,9 +232,7 @@ export const veneration: Skill = {
 export const parcimonie: Skill = {
   name: 'Parcimonie',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 56,
+  psCost: (craft: CraftState): number => 56,
   level: 15,
   progress: (craft: CraftState): void => {
     craft.ps -= 56;
@@ -165,9 +250,7 @@ export const parcimonie: Skill = {
 export const parcimoniePerenne: Skill = {
   name: 'Parcimonie pérenne',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 98,
+  psCost: (craft: CraftState): number => 98,
   level: 47,
   progress: (craft: CraftState): void => {
     craft.ps -= 98;
@@ -187,9 +270,7 @@ export const parcimoniePerenne: Skill = {
 export const reparationDeMaitre: Skill = {
   name: 'Réparation de maître',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 88,
+  psCost: (craft: CraftState): number => 88,
   level: 7,
   progress: (craft: CraftState): void => {
     craft.ps -= 88;
@@ -204,9 +285,7 @@ export const reparationDeMaitre: Skill = {
 export const manipulation: Skill = {
   name: 'Manipulation',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 96,
+  psCost: (craft: CraftState): number => 96,
   level: 65,
   progress: (craft: CraftState): void => {
     craft.ps -= 96;
@@ -221,13 +300,13 @@ export const manipulation: Skill = {
 export const observation: Skill = {
   name: 'Observation',
   icon: '',
-  firstStepOnly: false,
-  noParcimonie: false,
-  psCost: 7,
+  psCost: (craft: CraftState): number => 7,
   level: 13,
   progress: (craft: CraftState): void => {
     craft.ps -= 7;
     endStep(craft, 2, 'Observation');
+
+    craft.buffs.observation = 1;
   },
 };
 
@@ -240,11 +319,14 @@ export const SKILLS: Skill[] = [
   travailPrudent,
   travailPreparatoire,
   travailEconome,
+  travailAttentif,
+  ouvrageDeBase,
   veneration,
-  reparationDeMaitre,
   observation,
   parcimonie,
   parcimoniePerenne,
+  reparationDeMaitre,
+  manipulation,
 ];
 
 /**
@@ -267,6 +349,20 @@ function progressBuffs(craft: CraftState): number {
   }
 
   return (base + bonus) / 100;
+}
+
+function qualityBuffs(eff: number, craft: CraftState): number {
+  const base = 100;
+  let bonus = 0;
+
+  // add bonus if Vénération is active
+  if (craft.buffs.veneration > 0) {
+    bonus += 50;
+  }
+
+  const mult = (base + bonus) / 100;
+
+  return eff * (1 + craft.iq / 10) * mult;
 }
 
 /**

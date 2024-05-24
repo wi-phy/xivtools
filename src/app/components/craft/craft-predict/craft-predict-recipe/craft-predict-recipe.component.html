@@ -29,10 +29,12 @@
     @for(step of steps; track step.step ){
     <div>
       <p>Step: {{ step.step }}</p>
-      <p>Progress: {{ step.currentProgress }}</p>
+      <p class="text-green-300">Progress: {{ step.currentProgress }}</p>
+      <p class="text-blue-300">Quality: {{ step.currentQuality }}</p>
       <p>Durability: {{ step.currentDurability }}</p>
       <p>PS: {{ step.ps }}</p>
       <p>Time: {{ step.time }}</p>
+      <p>IQ: {{ step.iq }}</p>
       <p>Mémoire: {{ step.buffs.memoireMusculaire }}</p>
       <p>Vénération: {{ step.buffs.veneration }}</p>
       <p>Parcimonie: {{ step.buffs.parcimonie }}</p>
