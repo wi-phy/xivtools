@@ -22,7 +22,7 @@ export class CraftPredictRecipeComponent {
   private router = inject(Router);
   private craftPredictService = inject(CraftPredictService);
 
-  steps: CraftState[] = [];
+  crafts: CraftState[] = [];
   stats: PlayerStats = {} as PlayerStats;
 
   ngOnInit() {
@@ -44,6 +44,9 @@ export class CraftPredictRecipeComponent {
 
   debug() {
     this.craftPredictService.predict();
-    this.steps = this.craftPredictService.steps;
+  }
+
+  test() {
+    this.craftPredictService.test();
   }
 }

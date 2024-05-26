@@ -20,11 +20,13 @@ export interface CraftState {
 
   // infos about the current step
   step: number;
-  craftAction: string;
+  craftActions: string[];
   time: number;
   currentProgress: number;
   currentQuality: number;
   currentDurability: number;
+
+  state: { progress: number; quality: number; durability: number }[];
 
   // buffs
   buffs: {
@@ -33,9 +35,12 @@ export interface CraftState {
     parcimoniePerenne: number;
     veneration: number;
     manipulation: number;
+    grandsProgres: number;
+    innovation: number;
     observation: number;
     ouvrageDeBase: number;
     ouvrageStandard: number;
   };
   iq: number;
+  bene: boolean;
 }

@@ -16,6 +16,7 @@
     </button>
     <button class="btn btn-outline btn-neutral" (click)="goHome()">Home</button>
     <button class="btn btn-outline btn-neutral" (click)="debug()">Debug</button>
+    <button class="btn btn-outline btn-neutral" (click)="test()">Test</button>
   </div>
   <div class="w-full flex gap-5">
     <div class="w-1/3">
@@ -25,23 +26,16 @@
       <app-craft-predict-player-stats />
     </div>
   </div>
-  <div class="flex flex-wrap gap-5">
-    @for(step of steps; track step.step ){
+  <!-- <div class="flex flex-wrap gap-5">
+    @for(craft of crafts; track craft.craftActions ){
     <div>
-      <p>Step: {{ step.step }}</p>
-      <p class="text-green-300">Progress: {{ step.currentProgress }}</p>
-      <p class="text-blue-300">Quality: {{ step.currentQuality }}</p>
-      <p>Durability: {{ step.currentDurability }}</p>
-      <p>PS: {{ step.ps }}</p>
-      <p>Time: {{ step.time }}</p>
-      <p>IQ: {{ step.iq }}</p>
-      <p>Mémoire: {{ step.buffs.memoireMusculaire }}</p>
-      <p>Vénération: {{ step.buffs.veneration }}</p>
-      <p>Parcimonie: {{ step.buffs.parcimonie }}</p>
-      <p>ParcimonieP: {{ step.buffs.parcimoniePerenne }}</p>
-      <p>Manipulation: {{ step.buffs.manipulation }}</p>
-      <p>Action: {{ step.craftAction }}</p>
+      @for(action of craft.craftActions; track action){
+      <p>{{ action }}</p>
+      }
+      <p class="text-green-300">Progress: {{ craft.currentProgress }}</p>
+      <p class="text-blue-300">Quality: {{ craft.currentQuality }}</p>
+      <p>Time: {{ craft.time }}s</p>
     </div>
     }
-  </div>
+  </div> -->
 </div>

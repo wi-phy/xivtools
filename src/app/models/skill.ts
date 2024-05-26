@@ -7,7 +7,9 @@ export interface Skill {
   observationOnly?: boolean;
   noParcimonie?: boolean;
   iqOnly?: boolean;
+  iqMaxOnly?: boolean;
   psCost: (craft: CraftState) => number;
   level: number;
   progress: (craft: CraftState) => void;
+  progressSimul?: (craft: CraftState) => number;
 }
