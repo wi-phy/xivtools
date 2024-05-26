@@ -14,17 +14,30 @@ import {
   REPAIR_SKILLS,
   REPAIR_SKILLS_NAMES,
   SKILLS,
+  benedictionDeByregot,
   grandsProgres,
   innovation,
+  mainDivine,
   mainPreste,
   memoireMusculaire,
+  ouvrageAttentif,
+  ouvrageAvance,
+  ouvrageDeBase,
+  ouvrageParcimonieux,
+  ouvragePreparatoire,
+  ouvrageStandard,
   parcimonie,
+  reparationDeMaitre,
+  travailAttentif,
   travailDeBase,
+  travailEconome,
+  travailPreparatoire,
+  travailPrudent,
   veneration,
   veritableValeur,
 } from '../const/skills';
 import { CraftState } from '../models/craft-state';
-import { Skill } from '../models/skill';
+import { NewSkill, Skill } from '../models/skill';
 import { deepCopy } from '../utils/utils';
 
 @Injectable({
@@ -61,11 +74,7 @@ export class CraftPredictService {
     console.timeEnd('Function Execution Time');
   }
 
-  applyFirstAction(craft: CraftState): void {
-    craft.craftLevel > craft.playerLevel - 10
-      ? memoireMusculaire.progress(craft)
-      : mainPreste.progress(craft);
-  }
+  applyFirstAction(craft: CraftState): void {}
 
   applyActions(craft: CraftState): void {
     // filter actions
@@ -124,18 +133,6 @@ export class CraftPredictService {
           REPAIR_SKILLS_NAMES.includes(action.name) ||
           DURABILITY_BONUS_SKILLS_NAMES.includes(action.name)
       );
-    }
-
-    if (currentCraft.currentQuality === 0) {
-      if (
-        currentCraft.currentProgress -
-          this.simProgress(currentCraft, travailDeBase) <
-        0
-      ) {
-        craftActions = craftActions.filter(
-          (action) => !PROGRESS_SKILLS_NAMES.includes(action.name)
-        );
-      }
     }
 
     /**
@@ -318,6 +315,199 @@ export class CraftPredictService {
     return newCraft.currentProgress;
   }
 
+  test() {
+    const craft = this.initCraft();
+    let skills = [
+      deepCopy(veritableValeur),
+      // deepCopy(travailPrudent),
+      // deepCopy(ouvrageDeBase),
+      // deepCopy(ouvrageAvance),
+      // deepCopy(ouvrageAttentif),
+      // deepCopy(ouvrageParcimonieux),
+      // deepCopy(benedictionDeByregot),
+      deepCopy(ouvragePreparatoire),
+      deepCopy(ouvragePreparatoire),
+      deepCopy(ouvragePreparatoire),
+      deepCopy(ouvragePreparatoire),
+    ];
+    this.applyBuffs(craft, skills);
+    console.log('prog: ', this.progress(craft, skills));
+    console.log('qual: ', this.quality(craft, skills));
+    console.log('dur: ', this.durability(craft, skills));
+    console.log('ps: ', this.ps(craft, skills));
+    console.log(skills.map((s) => s.name));
+  }
+
+  /**
+   * Calculate the progress
+   * @param craft craft state
+   * @param skills list of skills
+   * @returns progress
+   */
+  private progress(craft: CraftState, skills: NewSkill[]): number {
+    const p1 = (craft.craftmanship * 10) / craft.progDiv + 2;
+    const p2 = craft.clvl <= craft.rlvl ? craft.progMod / 100 : 1;
+    const p = Math.floor(p1 * p2);
+
+    let progress = 0;
+    skills.forEach((skill, i) => {
+      if (skill.type === 'p') {
+        progress += Math.floor((p * this.progEfficiency(skill)) / 100);
+      }
+    });
+    return progress;
+  }
+
+  /**
+   * Calculate the efficiency of a progress skill
+   * @param skill skill
+   * @param i index of the skill in the rotation
+   * @param craft craft state
+   * @param skills list of skills
+   * @returns efficiency
+   */
+  private progEfficiency(skill: NewSkill): number {
+    return skill.efficiency * (1 + skill.xMem + skill.xVen / 2);
+  }
+
+  /**
+   * Calculate the quality progress
+   * @param craft craft state
+   * @param skills list of skills
+   * @returns quality progress
+   */
+  private quality(craft: CraftState, skills: NewSkill[]): number {
+    const q1 = (craft.control * 10) / craft.qualDiv + 35;
+    const q2 = craft.clvl <= craft.rlvl ? craft.qualMod / 100 : 1;
+    const q = Math.floor(q1 * q2);
+
+    let iq = 0;
+
+    // if main preste is in the rotation, return 100% quality
+    if (skills.some((s) => s.name === 'Main preste')) {
+      return craft.quality;
+    }
+
+    let quality = 0;
+    for (let skill of skills) {
+      if (skill.type === 'q') {
+        // apply efficiency bonus for Byregot's Blessing and reset IQ
+        if (skill.name !== 'Bénédiction de Byregot') {
+          quality += Math.floor((q * this.qualEfficiency(skill, iq)) / 100);
+          iq = iq + skill.iq < 10 ? iq + skill.iq : 10;
+        } else {
+          skill.efficiency += 20 * iq;
+          quality += Math.floor((q * this.qualEfficiency(skill, iq)) / 100);
+          iq = 0;
+        }
+      }
+    }
+    return quality;
+  }
+
+  /**
+   * Calculate the efficiency of a quality skill
+   * @param skill skill
+   * @param iq IQ
+   * @returns efficiency
+   */
+  private qualEfficiency(skill: NewSkill, iq: number): number {
+    return skill.efficiency * (1 + iq / 10) * (1 + skill.xGP + skill.xInno / 2);
+  }
+
+  /**
+   * Calculate the remaining durability
+   * @param craft craft state
+   * @param skills list of skills
+   * @returns remaining durability
+   */
+  private durability(craft: CraftState, skills: NewSkill[]): number {
+    let durability = 0;
+    for (let i = 0; i < skills.length; i++) {
+      let skill = skills[i];
+
+      // stop the loop if durability is negative before the end of the rotation
+      if (craft.durability < durability) {
+        durability = craft.durability + 1;
+        break;
+      }
+
+      if (skill.name !== 'Réparation de maître') {
+        durability += skill.durCost;
+      } else {
+        // restore durability when réparation de maître is used
+        durability = durability < 30 ? 0 : durability - 30;
+      }
+    }
+    return craft.durability - durability;
+  }
+
+  /**
+   * Calculate the remaining PS
+   * @param craft craft state
+   * @param skills list of skills
+   * @returns remaining PS
+   */
+  private ps(craft: CraftState, skills: NewSkill[]): number {
+    let ps = 0;
+    skills.forEach((skill) => {
+      ps += skill.psCost;
+    });
+    return craft.ps - ps;
+  }
+
+  /**
+   * Apply buffs / bonus combos to the skills
+   * @param skills list of skills
+   */
+  private applyBuffs(craft: CraftState, skills: NewSkill[]): void {
+    skills.forEach((skill, i) => {
+      // apply veneration buff on the next 4 progress skills
+      if (skill.name === 'Vénération') {
+        const endIndex = Math.min(i + 5, skills.length);
+        for (let j = i + 1; j < endIndex; j++) {
+          if (skills[j].type === 'p') {
+            skills[j].xVen = 1;
+          }
+        }
+      }
+
+      // apply mémoire musculaire buff on the next progress skill
+      else if (skill.name === 'Mémoire musculaire') {
+        const endIndex = Math.min(6, skills.length);
+        const subArr = skills.slice(1, endIndex);
+        const s = subArr.find((s) => s.type === 'p');
+        if (s) {
+          s.xMem = 1;
+        }
+      }
+
+      // change eff of travail preparatoire if durability is less than 20
+      else if (
+        skill.name === 'Travail préparatoire' &&
+        this.durability(craft, skills.slice(0, i)) < 20
+      ) {
+        skill.efficiency = 180;
+      }
+
+      // reduce PS cost of ouvrage standard if preceded by ouvrage de base
+      else if (
+        skill.name === 'Ouvrage standard' &&
+        skills[i - 1].name === 'Ouvrage de base'
+      ) {
+        skill.psCost = 18;
+      }
+
+      // reduce PS cost of ouvrage avancé if preceded by ouvrage standard
+      else if (
+        skill.name === 'Ouvrage avancé' &&
+        skills[i - 1].name === 'Ouvrage standard'
+      ) {
+        skill.psCost = 18;
+      }
+    });
+  }
+
   /**
    * Initialize the craft state
    * @returns CraftState
@@ -361,25 +551,5 @@ export class CraftPredictService {
       iq: 0,
       bene: false,
     };
-  }
-
-  test() {
-    console.log(
-      SKILLS.filter(
-        (action) =>
-          DURABILITY_BONUS_SKILLS_NAMES.includes(action.name) ||
-          QUALITY_SKILLS_NAMES.includes(action.name) ||
-          REPAIR_SKILLS_NAMES.includes(action.name) ||
-          QUALITY_BONUS_SKILLS_NAMES.includes(action.name)
-      )
-    );
-
-    console.log([
-      ...DURABILITY_BONUS_SKILLS,
-      innovation,
-      grandsProgres,
-      ...QUALITY_SKILLS,
-      ...REPAIR_SKILLS,
-    ]);
   }
 }
